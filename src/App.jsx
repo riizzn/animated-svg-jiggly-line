@@ -6,14 +6,14 @@ const App = () => {
   let time = Math.PI / 2;
   const lerp = (x, y, a) => x * (1 - a) + y * a;
   let reqId = null;
+  let x = 0.5;
 
-  const manageMouseEnter=()=>{
-    if(reqId){
+  const manageMouseEnter = () => {
+    if (reqId) {
       window.cancelAnimationFrame(reqId);
-      resetAnimation()
-
+      resetAnimation();
     }
-  }
+  };
 
   useEffect(() => {
     setPath(progress);
@@ -25,12 +25,14 @@ const App = () => {
     path.current.setAttributeNS(
       "",
       "d",
-      `M0 50 Q${width / 2} ${50 + progress} , ${width} 50 `
+      `M0 50 Q${width * x} ${50 + progress} , ${width} 50 `
     );
   };
 
   const manageMouseMove = (e) => {
-    const { movementY } = e;
+    const { movementY, clientX } = e;
+    const { left, width } = path.current.getBoundingClientRect();
+    x = (clientX - left) / width;
     progress += movementY;
     setPath(progress);
   };
@@ -45,7 +47,7 @@ const App = () => {
     progress = lerp(progress, 0, 0.025);
 
     if (Math.abs(progress) > 0.75) {
-      reqId=window.requestAnimationFrame(animateOut);
+      reqId = window.requestAnimationFrame(animateOut);
     } else {
       resetAnimation();
     }
@@ -60,10 +62,10 @@ const App = () => {
       <div className="w-[70vw] mx-auto">
         <div className="h-px w-full relative ">
           <div
-          onMouseEnter={manageMouseEnter}
+            onMouseEnter={manageMouseEnter}
             onMouseMove={manageMouseMove}
             onMouseLeave={manageMouseLeave}
-            className="h-10 hover:h-[150px] hover:top-[-75px]    border border-amber-300 relative -top-5 z-1 "
+            className="h-10 hover:h-[150px] hover:top-[-75px]     relative -top-5 z-1 "
           ></div>
           <svg className="w-full h-[100px] top-[-50px] absolute">
             <path
